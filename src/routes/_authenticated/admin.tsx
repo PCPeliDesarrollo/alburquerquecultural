@@ -48,11 +48,20 @@ function AdminPanel() {
 
   async function guardar() {
     if (!editing) return;
+    if (!editing.titulo || !editing.descripcion || !editing.fecha || !editing.hora || !editing.lugar || !editing.categoria) {
+      toast.error("Rellena todos los campos obligatorios");
+      return;
+    }
     const payload = {
-      titulo: editing.titulo, descripcion: editing.descripcion, categoria: editing.categoria,
-      fecha: editing.fecha, hora: editing.hora, lugar: editing.lugar,
+      titulo: editing.titulo,
+      descripcion: editing.descripcion,
+      categoria: editing.categoria,
+      fecha: editing.fecha,
+      hora: editing.hora,
+      lugar: editing.lugar,
       imagen_url: editing.imagen_url || null,
-      precio: Number(editing.precio) || 0, aforo_maximo: Number(editing.aforo_maximo) || 0,
+      precio: Number(editing.precio) || 0,
+      aforo_maximo: Number(editing.aforo_maximo) || 0,
       activo: editing.activo ?? true,
     };
     const res = editing.id
