@@ -14,16 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      compras: {
+        Row: {
+          cantidad_entradas: number
+          codigo_qr: string
+          evento_id: string
+          fecha_compra: string
+          id: string
+          total_pagado: number
+          user_id: string
+        }
+        Insert: {
+          cantidad_entradas: number
+          codigo_qr?: string
+          evento_id: string
+          fecha_compra?: string
+          id?: string
+          total_pagado: number
+          user_id: string
+        }
+        Update: {
+          cantidad_entradas?: number
+          codigo_qr?: string
+          evento_id?: string
+          fecha_compra?: string
+          id?: string
+          total_pagado?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compras_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "eventos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eventos: {
+        Row: {
+          activo: boolean
+          aforo_maximo: number
+          categoria: string
+          created_at: string
+          descripcion: string
+          entradas_vendidas: number
+          fecha: string
+          hora: string
+          id: string
+          imagen_url: string | null
+          lugar: string
+          precio: number
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          activo?: boolean
+          aforo_maximo?: number
+          categoria?: string
+          created_at?: string
+          descripcion: string
+          entradas_vendidas?: number
+          fecha: string
+          hora: string
+          id?: string
+          imagen_url?: string | null
+          lugar: string
+          precio?: number
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          activo?: boolean
+          aforo_maximo?: number
+          categoria?: string
+          created_at?: string
+          descripcion?: string
+          entradas_vendidas?: number
+          fecha?: string
+          hora?: string
+          id?: string
+          imagen_url?: string | null
+          lugar?: string
+          precio?: number
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nombre: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          nombre?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nombre?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "cliente"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +283,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "cliente"],
+    },
   },
 } as const
