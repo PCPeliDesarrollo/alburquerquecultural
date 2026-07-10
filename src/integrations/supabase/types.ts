@@ -68,6 +68,7 @@ export type Database = {
           id: string
           imagen_url: string | null
           lugar: string
+          orden: number
           precio: number
           recurrente_diario: boolean
           titulo: string
@@ -85,6 +86,7 @@ export type Database = {
           id?: string
           imagen_url?: string | null
           lugar: string
+          orden?: number
           precio?: number
           recurrente_diario?: boolean
           titulo: string
@@ -102,6 +104,7 @@ export type Database = {
           id?: string
           imagen_url?: string | null
           lugar?: string
+          orden?: number
           precio?: number
           recurrente_diario?: boolean
           titulo?: string
