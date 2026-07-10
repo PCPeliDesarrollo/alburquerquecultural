@@ -10,8 +10,10 @@ type Compra = {
   total_pagado: number;
   codigo_qr: string;
   fecha_compra: string;
+  fecha_evento: string | null;
   eventos: {
     titulo: string; fecha: string; hora: string; lugar: string; categoria: string;
+    recurrente_diario: boolean;
   } | null;
 };
 
