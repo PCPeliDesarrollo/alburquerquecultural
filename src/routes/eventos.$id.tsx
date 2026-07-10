@@ -102,8 +102,17 @@ function EventoDetalle() {
           </div>
           <div className="mt-6">
             <span className="rounded-full bg-[color:var(--gold)] px-3 py-1 text-xs font-semibold text-[color:var(--gold-foreground)]">{evento.categoria}</span>
+            {evento.recurrente_diario && (
+              <span className="ml-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">Entrada diaria</span>
+            )}
             <h1 className="mt-3 font-display text-4xl text-primary">{evento.titulo}</h1>
-            <div className="mt-2 text-muted-foreground">{formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}</div>
+            <div className="mt-2 text-muted-foreground">
+              {evento.recurrente_diario
+                ? <>Válida solo hoy · <span className="font-medium text-foreground">{formatDate(fechaMostrada)}</span> · {evento.hora.slice(0, 5)} · {evento.lugar}</>
+                : <>{formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}</>}
+            </div>
+            <p className="mt-6 whitespace-pre-line leading-relaxed text-foreground/90">{evento.descripcion}</p>
+          </div>
             <p className="mt-6 whitespace-pre-line leading-relaxed text-foreground/90">{evento.descripcion}</p>
           </div>
         </div>
