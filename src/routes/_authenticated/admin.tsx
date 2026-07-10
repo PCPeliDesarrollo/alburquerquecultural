@@ -211,7 +211,12 @@ function AdminPanel() {
             </Field>
             <Field label="Hora"><input type="time" className="input" value={editing.hora ?? ""} onChange={(e) => setEditing({ ...editing, hora: e.target.value })} /></Field>
             <Field label="Lugar"><input className="input" value={editing.lugar ?? ""} onChange={(e) => setEditing({ ...editing, lugar: e.target.value })} /></Field>
-            <Field label="Imagen (URL)"><input className="input" value={editing.imagen_url ?? ""} onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })} /></Field>
+            <Field label="Imagen del evento" full>
+              <ImagenUploader
+                value={editing.imagen_url ?? ""}
+                onChange={(url) => setEditing({ ...editing, imagen_url: url })}
+              />
+            </Field>
             <Field label="Precio (€)"><input type="number" step="0.01" className="input" value={editing.precio ?? 0} onChange={(e) => setEditing({ ...editing, precio: Number(e.target.value) })} /></Field>
             <Field label="Aforo máximo"><input type="number" className="input" value={editing.aforo_maximo ?? 0} onChange={(e) => setEditing({ ...editing, aforo_maximo: Number(e.target.value) })} /></Field>
             <Field label="Descripción" full>
@@ -309,6 +314,76 @@ function Modal({ children, onClose, title, wide }: { children: React.ReactNode; 
         </div>
         {children}
       </div>
+    </div>
+  );
+}
+
+function ImagenUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [subiendo, setSubiendo] = useState(false);
+
+  async function subir(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Selecciona un archivo de imagen (JPG, PNG, WEBP...)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("La imagen no puede superar los 5 MB");
+      return;
+    }
+    setSubiendo(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("eventos").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+    setSubiendo(false);
+    if (error) {
+      toast.error(`No se pudo subir la imagen: ${error.message}`);
+      return;
+    }
+    const { data } = supabase.storage.from("eventos").getPublicUrl(path);
+    onChange(data.publicUrl);
+    toast.success("Imagen subida correctamente");
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <label className={`inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-accent ${subiendo ? "pointer-events-none opacity-60" : ""}`}>
+          {subiendo ? "Subiendo…" : "📷 Subir desde el ordenador"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={subiendo}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) subir(f);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-xs text-destructive hover:underline"
+          >Quitar imagen</button>
+        )}
+      </div>
+      <input
+        className="input"
+        placeholder="…o pega una URL de imagen"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <div className="overflow-hidden rounded-md border border-border bg-muted">
+          <img src={value} alt="Vista previa" className="max-h-48 w-full object-cover" />
+        </div>
+      )}
     </div>
   );
 }
