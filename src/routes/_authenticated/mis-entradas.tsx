@@ -27,7 +27,7 @@ function MisEntradas() {
   useEffect(() => {
     supabase
       .from("compras")
-      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, eventos(titulo, fecha, hora, lugar, categoria)")
+      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, fecha_evento, eventos(titulo, fecha, hora, lugar, categoria, recurrente_diario)")
       .order("fecha_compra", { ascending: false })
       .then(({ data }) => setCompras((data as any) ?? []));
   }, []);
