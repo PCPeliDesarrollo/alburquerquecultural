@@ -133,7 +133,7 @@ function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
         <Link to="/" className="flex min-w-0 items-center gap-3">
-          <img src={logo.url} alt="Ayuntamiento de Alburquerque" className="h-14 w-auto shrink-0 object-contain" />
+          <img src={logo.url} alt="Ayuntamiento de Alburquerque" className="h-11 w-auto shrink-0 object-contain" />
           <div className="min-w-0 leading-tight">
             <div className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Alburquerque Cultural</div>
             <div className="truncate text-xs text-muted-foreground">Ayuntamiento · Entradas y actividades</div>
