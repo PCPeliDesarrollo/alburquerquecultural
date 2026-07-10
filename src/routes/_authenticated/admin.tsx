@@ -106,13 +106,14 @@ function AdminPanel() {
     setAsistentesDe(evento.id);
     const { data } = await supabase
       .from("compras")
-      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, profiles(email, nombre)")
+      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, profiles(email, nombre, apellidos)")
       .eq("evento_id", evento.id)
       .order("fecha_compra", { ascending: false });
     setAsistentes(((data as any[]) ?? []).map((r) => ({
       compra_id: r.id, cantidad: r.cantidad_entradas, total: r.total_pagado,
       codigo_qr: r.codigo_qr, fecha_compra: r.fecha_compra,
       email: r.profiles?.email ?? "—", nombre: r.profiles?.nombre ?? null,
+      apellidos: r.profiles?.apellidos ?? null,
     })));
   }
 
