@@ -12,7 +12,7 @@ type Evento = {
 };
 
 
-type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; fecha_compra: string };
+type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; apellidos: string | null; fecha_compra: string };
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
