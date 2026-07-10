@@ -82,7 +82,9 @@ function AdminPanel() {
       aforo_maximo: Number(editing.aforo_maximo) || 0,
       activo: editing.activo ?? true,
       recurrente_diario: esDiario,
+      orden: Number.isFinite(Number(editing.orden)) ? Number(editing.orden) : 100,
     };
+
     const res = editing.id
       ? await supabase.from("eventos").update(payload).eq("id", editing.id)
       : await supabase.from("eventos").insert(payload);
