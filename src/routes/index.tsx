@@ -149,13 +149,17 @@ function EventoCard({ evento }: { evento: Evento }) {
       <div className="p-5">
         <h3 className="font-display text-xl leading-tight text-foreground">{evento.titulo}</h3>
         <div className="mt-2 text-sm text-muted-foreground">
-          {formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}
+          {evento.recurrente_diario
+            ? <><span className="font-medium text-[color:var(--gold)]">Todos los días</span> · {evento.hora.slice(0, 5)} · {evento.lugar}</>
+            : <>{formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}</>}
         </div>
         <div className="mt-4 flex items-center justify-between">
           <div className="text-lg font-semibold text-primary">
             {evento.precio > 0 ? `${Number(evento.precio).toFixed(2)} €` : "Gratis"}
           </div>
-          <div className="text-xs text-muted-foreground">{disponibles} plazas</div>
+          <div className="text-xs text-muted-foreground">
+            {evento.recurrente_diario ? "Entrada diaria" : `${evento.aforo_maximo - evento.entradas_vendidas} plazas`}
+          </div>
         </div>
       </div>
     </Link>
