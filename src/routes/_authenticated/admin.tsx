@@ -118,8 +118,8 @@ function AdminPanel() {
   }
 
   function exportarCsv(evento: Evento) {
-    const rows = [["Nombre", "Email", "Entradas", "Total (€)", "Localizador", "Fecha compra"]];
-    asistentes.forEach((a) => rows.push([a.nombre ?? "", a.email, String(a.cantidad), String(a.total), a.codigo_qr, new Date(a.fecha_compra).toISOString()]));
+    const rows = [["Nombre", "Apellidos", "Email", "Entradas", "Total (€)", "Localizador", "Fecha compra"]];
+    asistentes.forEach((a) => rows.push([a.nombre ?? "", a.apellidos ?? "", a.email, String(a.cantidad), String(a.total), a.codigo_qr, new Date(a.fecha_compra).toISOString()]));
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
