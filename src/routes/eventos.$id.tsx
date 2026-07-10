@@ -113,8 +113,6 @@ function EventoDetalle() {
             </div>
             <p className="mt-6 whitespace-pre-line leading-relaxed text-foreground/90">{evento.descripcion}</p>
           </div>
-            <p className="mt-6 whitespace-pre-line leading-relaxed text-foreground/90">{evento.descripcion}</p>
-          </div>
         </div>
 
         <aside className="h-fit rounded-2xl border border-border bg-card p-6 shadow-elegant lg:sticky lg:top-24">
