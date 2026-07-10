@@ -204,7 +204,11 @@ function AdminPanel() {
                 {CATEGORIAS.map((c) => <option key={c}>{c}</option>)}
               </select>
             </Field>
-            <Field label="Fecha"><input type="date" className="input" value={editing.fecha ?? ""} onChange={(e) => setEditing({ ...editing, fecha: e.target.value })} /></Field>
+            <Field label={editing.recurrente_diario ? "Fecha (se asigna automáticamente cada día)" : "Fecha"}>
+              <input type="date" className="input" disabled={!!editing.recurrente_diario}
+                value={editing.recurrente_diario ? "" : (editing.fecha ?? "")}
+                onChange={(e) => setEditing({ ...editing, fecha: e.target.value })} />
+            </Field>
             <Field label="Hora"><input type="time" className="input" value={editing.hora ?? ""} onChange={(e) => setEditing({ ...editing, hora: e.target.value })} /></Field>
             <Field label="Lugar"><input className="input" value={editing.lugar ?? ""} onChange={(e) => setEditing({ ...editing, lugar: e.target.value })} /></Field>
             <Field label="Imagen (URL)"><input className="input" value={editing.imagen_url ?? ""} onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })} /></Field>
@@ -213,6 +217,16 @@ function AdminPanel() {
             <Field label="Descripción" full>
               <textarea rows={5} className="input" value={editing.descripcion ?? ""} onChange={(e) => setEditing({ ...editing, descripcion: e.target.value })} />
             </Field>
+            <label className="flex items-start gap-2 rounded-md border border-border bg-muted/30 p-3 text-sm sm:col-span-2">
+              <input type="checkbox" className="mt-0.5" checked={!!editing.recurrente_diario}
+                onChange={(e) => setEditing({ ...editing, recurrente_diario: e.target.checked })} />
+              <span>
+                <span className="font-medium">Entrada diaria</span>
+                <span className="block text-xs text-muted-foreground">
+                  Marca esta opción para entradas válidas solo el día en que se compran (p. ej. piscina municipal). La fecha se ajusta automáticamente cada día.
+                </span>
+              </span>
+            </label>
             <label className="flex items-center gap-2 text-sm sm:col-span-2">
               <input type="checkbox" checked={editing.activo ?? true} onChange={(e) => setEditing({ ...editing, activo: e.target.checked })} />
               Evento visible al público
