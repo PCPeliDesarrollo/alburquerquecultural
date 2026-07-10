@@ -17,7 +17,14 @@ type Evento = {
   precio: number;
   aforo_maximo: number;
   entradas_vendidas: number;
+  recurrente_diario: boolean;
 };
+
+function hoyISO() {
+  const d = new Date();
+  const tz = d.getTimezoneOffset();
+  return new Date(d.getTime() - tz * 60000).toISOString().slice(0, 10);
+}
 
 export const Route = createFileRoute("/eventos/$id")({
   component: EventoDetalle,
@@ -60,11 +67,13 @@ function EventoDetalle() {
     setComprando(true);
     // Pago simulado
     await new Promise((r) => setTimeout(r, 900));
+    const fechaEvento = evento!.recurrente_diario ? hoyISO() : evento!.fecha;
     const { error } = await supabase.from("compras").insert({
       user_id: session.id,
       evento_id: evento!.id,
       cantidad_entradas: cantidad,
       total_pagado: total,
+      fecha_evento: fechaEvento,
     });
     setComprando(false);
     if (error) {
@@ -74,6 +83,8 @@ function EventoDetalle() {
     toast.success("¡Compra realizada! Consulta tus entradas.");
     navigate({ to: "/mis-entradas" });
   }
+
+  const fechaMostrada = evento.recurrente_diario ? hoyISO() : evento.fecha;
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-10">
@@ -91,8 +102,15 @@ function EventoDetalle() {
           </div>
           <div className="mt-6">
             <span className="rounded-full bg-[color:var(--gold)] px-3 py-1 text-xs font-semibold text-[color:var(--gold-foreground)]">{evento.categoria}</span>
+            {evento.recurrente_diario && (
+              <span className="ml-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">Entrada diaria</span>
+            )}
             <h1 className="mt-3 font-display text-4xl text-primary">{evento.titulo}</h1>
-            <div className="mt-2 text-muted-foreground">{formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}</div>
+            <div className="mt-2 text-muted-foreground">
+              {evento.recurrente_diario
+                ? <>Válida solo hoy · <span className="font-medium text-foreground">{formatDate(fechaMostrada)}</span> · {evento.hora.slice(0, 5)} · {evento.lugar}</>
+                : <>{formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}</>}
+            </div>
             <p className="mt-6 whitespace-pre-line leading-relaxed text-foreground/90">{evento.descripcion}</p>
           </div>
         </div>

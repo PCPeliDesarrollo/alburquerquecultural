@@ -10,8 +10,10 @@ type Compra = {
   total_pagado: number;
   codigo_qr: string;
   fecha_compra: string;
+  fecha_evento: string | null;
   eventos: {
     titulo: string; fecha: string; hora: string; lugar: string; categoria: string;
+    recurrente_diario: boolean;
   } | null;
 };
 
@@ -25,7 +27,7 @@ function MisEntradas() {
   useEffect(() => {
     supabase
       .from("compras")
-      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, eventos(titulo, fecha, hora, lugar, categoria)")
+      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, fecha_evento, eventos(titulo, fecha, hora, lugar, categoria, recurrente_diario)")
       .order("fecha_compra", { ascending: false })
       .then(({ data }) => setCompras((data as any) ?? []));
   }, []);
@@ -63,8 +65,13 @@ function TicketRow({ c }: { c: Compra }) {
         </div>
         <h3 className="mt-1 font-display text-xl text-primary">{c.eventos?.titulo ?? "Evento"}</h3>
         <div className="mt-1 text-sm text-muted-foreground">
-          {c.eventos && `${formatDate(c.eventos.fecha)} · ${c.eventos.hora.slice(0,5)} · ${c.eventos.lugar}`}
+          {c.eventos && `${formatDate(c.fecha_evento ?? c.eventos.fecha)} · ${c.eventos.hora.slice(0,5)} · ${c.eventos.lugar}`}
         </div>
+        {c.eventos?.recurrente_diario && (
+          <div className="mt-1 inline-block rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
+            Entrada válida solo el {formatDate(c.fecha_evento ?? c.eventos.fecha)}
+          </div>
+        )}
         <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
           <div><div className="text-muted-foreground">Entradas</div><div className="font-semibold">{c.cantidad_entradas}</div></div>
           <div><div className="text-muted-foreground">Total</div><div className="font-semibold">{Number(c.total_pagado).toFixed(2)} €</div></div>

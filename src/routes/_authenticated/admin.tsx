@@ -8,6 +8,7 @@ type Evento = {
   id: string; titulo: string; descripcion: string; categoria: string;
   fecha: string; hora: string; lugar: string; imagen_url: string | null;
   precio: number; aforo_maximo: number; entradas_vendidas: number; activo: boolean;
+  recurrente_diario: boolean;
 };
 
 type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; fecha_compra: string };
@@ -32,7 +33,7 @@ const CATEGORIAS = [
 const EMPTY: Partial<Evento> = {
   titulo: "", descripcion: "", categoria: "Teatro",
   fecha: "", hora: "20:00", lugar: "Casa de la Cultura", imagen_url: "",
-  precio: 0, aforo_maximo: 100, activo: true,
+  precio: 0, aforo_maximo: 100, activo: true, recurrente_diario: false,
 };
 
 function AdminPanel() {
@@ -59,21 +60,25 @@ function AdminPanel() {
 
   async function guardar() {
     if (!editing) return;
-    if (!editing.titulo || !editing.descripcion || !editing.fecha || !editing.hora || !editing.lugar || !editing.categoria) {
+    const esDiario = !!editing.recurrente_diario;
+    if (!editing.titulo || !editing.descripcion || !editing.hora || !editing.lugar || !editing.categoria || (!esDiario && !editing.fecha)) {
       toast.error("Rellena todos los campos obligatorios");
       return;
     }
+    const hoy = new Date();
+    const hoyISO = new Date(hoy.getTime() - hoy.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     const payload = {
       titulo: editing.titulo,
       descripcion: editing.descripcion,
       categoria: editing.categoria,
-      fecha: editing.fecha,
+      fecha: esDiario ? hoyISO : editing.fecha!,
       hora: editing.hora,
       lugar: editing.lugar,
       imagen_url: editing.imagen_url || null,
       precio: Number(editing.precio) || 0,
       aforo_maximo: Number(editing.aforo_maximo) || 0,
       activo: editing.activo ?? true,
+      recurrente_diario: esDiario,
     };
     const res = editing.id
       ? await supabase.from("eventos").update(payload).eq("id", editing.id)
@@ -199,7 +204,11 @@ function AdminPanel() {
                 {CATEGORIAS.map((c) => <option key={c}>{c}</option>)}
               </select>
             </Field>
-            <Field label="Fecha"><input type="date" className="input" value={editing.fecha ?? ""} onChange={(e) => setEditing({ ...editing, fecha: e.target.value })} /></Field>
+            <Field label={editing.recurrente_diario ? "Fecha (se asigna automáticamente cada día)" : "Fecha"}>
+              <input type="date" className="input" disabled={!!editing.recurrente_diario}
+                value={editing.recurrente_diario ? "" : (editing.fecha ?? "")}
+                onChange={(e) => setEditing({ ...editing, fecha: e.target.value })} />
+            </Field>
             <Field label="Hora"><input type="time" className="input" value={editing.hora ?? ""} onChange={(e) => setEditing({ ...editing, hora: e.target.value })} /></Field>
             <Field label="Lugar"><input className="input" value={editing.lugar ?? ""} onChange={(e) => setEditing({ ...editing, lugar: e.target.value })} /></Field>
             <Field label="Imagen (URL)"><input className="input" value={editing.imagen_url ?? ""} onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })} /></Field>
@@ -208,6 +217,16 @@ function AdminPanel() {
             <Field label="Descripción" full>
               <textarea rows={5} className="input" value={editing.descripcion ?? ""} onChange={(e) => setEditing({ ...editing, descripcion: e.target.value })} />
             </Field>
+            <label className="flex items-start gap-2 rounded-md border border-border bg-muted/30 p-3 text-sm sm:col-span-2">
+              <input type="checkbox" className="mt-0.5" checked={!!editing.recurrente_diario}
+                onChange={(e) => setEditing({ ...editing, recurrente_diario: e.target.checked })} />
+              <span>
+                <span className="font-medium">Entrada diaria</span>
+                <span className="block text-xs text-muted-foreground">
+                  Marca esta opción para entradas válidas solo el día en que se compran (p. ej. piscina municipal). La fecha se ajusta automáticamente cada día.
+                </span>
+              </span>
+            </label>
             <label className="flex items-center gap-2 text-sm sm:col-span-2">
               <input type="checkbox" checked={editing.activo ?? true} onChange={(e) => setEditing({ ...editing, activo: e.target.checked })} />
               Evento visible al público
