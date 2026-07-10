@@ -136,18 +136,10 @@ function AdminPanel() {
     </div>
   );
 
-  const totales = eventos.reduce(
-    (acc, e) => ({
-      vendidas: acc.vendidas + e.entradas_vendidas,
-      recaudado: acc.recaudado + e.entradas_vendidas * Number(e.precio),
-      aforo: acc.aforo + e.aforo_maximo,
-    }),
-    { vendidas: 0, recaudado: 0, aforo: 0 }
-  );
-
   // Categorías presentes en los eventos (más "Todos") — se muestran como pestañas
   const tabs = ["Todos", ...CATEGORIAS.filter((c) => eventos.some((e) => e.categoria === c))];
   const eventosTab = tab === "Todos" ? eventos : eventos.filter((e) => e.categoria === tab);
+
 
   // Totales por cada tipo de entrada para las tarjetas compactas
   const totalesPorCategoria = CATEGORIAS.filter((c) => eventos.some((e) => e.categoria === c)).map((c) => {
