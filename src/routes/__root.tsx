@@ -11,7 +11,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
-import logo from "@/assets/logo-alburquerque-transparente.png.asset.json";
+import logo from "@/assets/logo-alburquerque-transparente-v2.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 
