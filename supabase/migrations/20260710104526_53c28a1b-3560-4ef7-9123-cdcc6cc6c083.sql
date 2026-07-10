@@ -1,0 +1,1 @@
+ALTER TABLE public.eventos ADD COLUMN IF NOT EXISTS orden integer NOT NULL DEFAULT 100;

@@ -8,8 +8,9 @@ type Evento = {
   id: string; titulo: string; descripcion: string; categoria: string;
   fecha: string; hora: string; lugar: string; imagen_url: string | null;
   precio: number; aforo_maximo: number; entradas_vendidas: number; activo: boolean;
-  recurrente_diario: boolean;
+  recurrente_diario: boolean; orden: number;
 };
+
 
 type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; fecha_compra: string };
 
@@ -33,8 +34,9 @@ const CATEGORIAS = [
 const EMPTY: Partial<Evento> = {
   titulo: "", descripcion: "", categoria: "Teatro",
   fecha: "", hora: "20:00", lugar: "Casa de la Cultura", imagen_url: "",
-  precio: 0, aforo_maximo: 100, activo: true, recurrente_diario: false,
+  precio: 0, aforo_maximo: 100, activo: true, recurrente_diario: false, orden: 100,
 };
+
 
 function AdminPanel() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -53,9 +55,10 @@ function AdminPanel() {
   }, []);
 
   async function refresh() {
-    const { data } = await supabase.from("eventos").select("*").order("fecha", { ascending: true });
+    const { data } = await supabase.from("eventos").select("*").order("orden", { ascending: true }).order("fecha", { ascending: true });
     setEventos((data as Evento[]) ?? []);
   }
+
   useEffect(() => { if (isAdmin) refresh(); }, [isAdmin]);
 
   async function guardar() {
@@ -79,7 +82,9 @@ function AdminPanel() {
       aforo_maximo: Number(editing.aforo_maximo) || 0,
       activo: editing.activo ?? true,
       recurrente_diario: esDiario,
+      orden: Number.isFinite(Number(editing.orden)) ? Number(editing.orden) : 100,
     };
+
     const res = editing.id
       ? await supabase.from("eventos").update(payload).eq("id", editing.id)
       : await supabase.from("eventos").insert(payload);
@@ -219,6 +224,10 @@ function AdminPanel() {
             </Field>
             <Field label="Precio (€)"><input type="number" step="0.01" className="input" value={editing.precio ?? 0} onChange={(e) => setEditing({ ...editing, precio: Number(e.target.value) })} /></Field>
             <Field label="Aforo máximo"><input type="number" className="input" value={editing.aforo_maximo ?? 0} onChange={(e) => setEditing({ ...editing, aforo_maximo: Number(e.target.value) })} /></Field>
+            <Field label="Orden (menor = aparece antes)" full>
+              <input type="number" className="input" value={editing.orden ?? 100} onChange={(e) => setEditing({ ...editing, orden: Number(e.target.value) })} />
+            </Field>
+
             <Field label="Descripción" full>
               <textarea rows={5} className="input" value={editing.descripcion ?? ""} onChange={(e) => setEditing({ ...editing, descripcion: e.target.value })} />
             </Field>
