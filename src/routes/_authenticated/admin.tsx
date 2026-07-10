@@ -8,8 +8,9 @@ type Evento = {
   id: string; titulo: string; descripcion: string; categoria: string;
   fecha: string; hora: string; lugar: string; imagen_url: string | null;
   precio: number; aforo_maximo: number; entradas_vendidas: number; activo: boolean;
-  recurrente_diario: boolean;
+  recurrente_diario: boolean; orden: number;
 };
+
 
 type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; fecha_compra: string };
 
