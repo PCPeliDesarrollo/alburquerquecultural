@@ -83,10 +83,17 @@ function AuthPage() {
 
         <form onSubmit={onSubmit} className="space-y-4">
           {mode === "signup" && (
-            <div>
-              <label className="mb-1 block text-sm font-medium">Nombre</label>
-              <input value={nombre} onChange={(e) => setNombre(e.target.value)} required
-                className="h-11 w-full rounded-md border border-input bg-background px-3" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">Nombre</label>
+                <input value={nombre} onChange={(e) => setNombre(e.target.value)} required
+                  className="h-11 w-full rounded-md border border-input bg-background px-3" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">Apellidos</label>
+                <input value={apellidos} onChange={(e) => setApellidos(e.target.value)} required
+                  className="h-11 w-full rounded-md border border-input bg-background px-3" />
+              </div>
             </div>
           )}
           <div>
