@@ -104,17 +104,38 @@ function AdminPanel() {
 
   async function verAsistentes(evento: Evento) {
     setAsistentesDe(evento.id);
-    const { data } = await supabase
+    const { data: compras, error } = await supabase
       .from("compras")
-      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, profiles(email, nombre, apellidos)")
+      .select("id, user_id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra")
       .eq("evento_id", evento.id)
       .order("fecha_compra", { ascending: false });
-    setAsistentes(((data as any[]) ?? []).map((r) => ({
+
+    if (error) {
+      toast.error(`No se pudieron cargar los asistentes: ${error.message}`);
+      setAsistentes([]);
+      return;
+    }
+
+    const userIds = Array.from(new Set(((compras as any[]) ?? []).map((r) => r.user_id).filter(Boolean)));
+    const { data: perfiles, error: perfilesError } = userIds.length
+      ? await supabase.from("profiles").select("id, email, nombre, apellidos").in("id", userIds)
+      : { data: [], error: null };
+
+    if (perfilesError) {
+      toast.error(`No se pudieron cargar los datos de clientes: ${perfilesError.message}`);
+    }
+
+    const perfilesPorUsuario = new Map(((perfiles as any[]) ?? []).map((p) => [p.id, p]));
+
+    setAsistentes(((compras as any[]) ?? []).map((r) => {
+      const perfil = perfilesPorUsuario.get(r.user_id);
+      return ({
       compra_id: r.id, cantidad: r.cantidad_entradas, total: r.total_pagado,
       codigo_qr: r.codigo_qr, fecha_compra: r.fecha_compra,
-      email: r.profiles?.email ?? "—", nombre: r.profiles?.nombre ?? null,
-      apellidos: r.profiles?.apellidos ?? null,
-    })));
+        email: perfil?.email ?? "—", nombre: perfil?.nombre ?? null,
+        apellidos: perfil?.apellidos ?? null,
+      });
+    }));
   }
 
   async function exportarPdf(evento: Evento) {
