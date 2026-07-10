@@ -224,6 +224,10 @@ function AdminPanel() {
             </Field>
             <Field label="Precio (€)"><input type="number" step="0.01" className="input" value={editing.precio ?? 0} onChange={(e) => setEditing({ ...editing, precio: Number(e.target.value) })} /></Field>
             <Field label="Aforo máximo"><input type="number" className="input" value={editing.aforo_maximo ?? 0} onChange={(e) => setEditing({ ...editing, aforo_maximo: Number(e.target.value) })} /></Field>
+            <Field label="Orden (menor = aparece antes)" full>
+              <input type="number" className="input" value={editing.orden ?? 100} onChange={(e) => setEditing({ ...editing, orden: Number(e.target.value) })} />
+            </Field>
+
             <Field label="Descripción" full>
               <textarea rows={5} className="input" value={editing.descripcion ?? ""} onChange={(e) => setEditing({ ...editing, descripcion: e.target.value })} />
             </Field>
