@@ -16,11 +16,22 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
 });
 
-const CATEGORIAS = ["Festival Medieval", "Teatro", "Música", "Infantil", "Deporte", "General"];
+const CATEGORIAS = [
+  "Teatro",
+  "Casa de la Cultura",
+  "Piscina Municipal",
+  "Festival Medieval",
+  "Música",
+  "Infantil",
+  "Deporte",
+  "Talleres",
+  "Exposiciones",
+  "General",
+];
 
 const EMPTY: Partial<Evento> = {
-  titulo: "", descripcion: "", categoria: "Festival Medieval",
-  fecha: "", hora: "20:00", lugar: "Castillo de Luna", imagen_url: "",
+  titulo: "", descripcion: "", categoria: "Teatro",
+  fecha: "", hora: "20:00", lugar: "Casa de la Cultura", imagen_url: "",
   precio: 0, aforo_maximo: 100, activo: true,
 };
 

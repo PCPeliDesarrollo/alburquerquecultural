@@ -65,12 +65,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ayuntamiento de Alburquerque — Entradas y Eventos" },
-      { name: "description", content: "Compra entradas para el Festival Medieval y otros eventos culturales de Alburquerque (Badajoz)." },
+      { title: "Alburquerque Cultural — Entradas y Eventos del Ayuntamiento" },
+      { name: "description", content: "Compra entradas para teatros en la Casa de la Cultura, piscina municipal, Festival Medieval y todos los eventos del Ayuntamiento de Alburquerque (Badajoz)." },
       { name: "author", content: "Ayuntamiento de Alburquerque" },
       { name: "theme-color", content: "#6b1f1a" },
-      { property: "og:title", content: "Ayuntamiento de Alburquerque — Entradas y Eventos" },
-      { property: "og:description", content: "Festival Medieval, teatro, cultura y más." },
+      { property: "og:title", content: "Alburquerque Cultural — Entradas y Eventos" },
+      { property: "og:description", content: "Teatro, piscina, Festival Medieval, conciertos y actividades culturales de Alburquerque." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -131,8 +131,8 @@ function SiteHeader() {
         <Link to="/" className="flex min-w-0 items-center gap-3">
           <img src={logo.url} alt="Escudo de Alburquerque" className="h-11 w-11 shrink-0 object-contain" />
           <div className="min-w-0 leading-tight">
-            <div className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Alburquerque</div>
-            <div className="truncate text-xs text-muted-foreground">Ayuntamiento · Cultura y Eventos</div>
+            <div className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Alburquerque Cultural</div>
+            <div className="truncate text-xs text-muted-foreground">Ayuntamiento · Entradas y actividades</div>
           </div>
         </Link>
         <nav className="ml-auto flex items-center gap-1 text-sm">
