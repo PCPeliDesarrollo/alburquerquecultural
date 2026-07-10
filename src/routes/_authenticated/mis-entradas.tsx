@@ -27,9 +27,21 @@ export const Route = createFileRoute("/_authenticated/mis-entradas")({
 
 function MisEntradas() {
   const [entradas, setEntradas] = useState<Entrada[] | null>(null);
+  const [profile, setProfile] = useState<{ id: string; nombre: string | null; apellidos: string | null } | null>(null);
 
   useEffect(() => {
     (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (uid) {
+        const { data: p } = await supabase
+          .from("profiles")
+          .select("id, nombre, apellidos")
+          .eq("id", uid)
+          .maybeSingle();
+        setProfile(p ?? { id: uid, nombre: null, apellidos: null });
+      }
+
       const { data } = await supabase
         .from("entradas")
         .select("id, codigo_qr, usada, fecha_uso, compra_id, compras(cantidad_entradas, total_pagado, fecha_evento, fecha_compra), eventos(titulo, fecha, hora, lugar, categoria, recurrente_diario)")
@@ -52,6 +64,8 @@ function MisEntradas() {
       setEntradas(rows);
     })();
   }, []);
+
+  const necesitaDatos = !!profile && (!profile.nombre?.trim() || !profile.apellidos?.trim());
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
