@@ -20,6 +20,7 @@ export type Database = {
           codigo_qr: string
           evento_id: string
           fecha_compra: string
+          fecha_evento: string | null
           id: string
           total_pagado: number
           user_id: string
@@ -29,6 +30,7 @@ export type Database = {
           codigo_qr?: string
           evento_id: string
           fecha_compra?: string
+          fecha_evento?: string | null
           id?: string
           total_pagado: number
           user_id: string
@@ -38,6 +40,7 @@ export type Database = {
           codigo_qr?: string
           evento_id?: string
           fecha_compra?: string
+          fecha_evento?: string | null
           id?: string
           total_pagado?: number
           user_id?: string
@@ -66,6 +69,7 @@ export type Database = {
           imagen_url: string | null
           lugar: string
           precio: number
+          recurrente_diario: boolean
           titulo: string
           updated_at: string
         }
@@ -82,6 +86,7 @@ export type Database = {
           imagen_url?: string | null
           lugar: string
           precio?: number
+          recurrente_diario?: boolean
           titulo: string
           updated_at?: string
         }
@@ -98,6 +103,7 @@ export type Database = {
           imagen_url?: string | null
           lugar?: string
           precio?: number
+          recurrente_diario?: boolean
           titulo?: string
           updated_at?: string
         }
