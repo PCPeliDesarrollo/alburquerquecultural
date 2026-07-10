@@ -37,7 +37,7 @@ function AuthPage() {
           email, password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { nombre },
+            data: { nombre, apellidos },
           },
         });
         if (error) throw error;
