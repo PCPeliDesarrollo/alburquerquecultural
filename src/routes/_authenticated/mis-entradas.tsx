@@ -45,6 +45,7 @@ function MisEntradas() {
       const { data } = await supabase
         .from("entradas")
         .select("id, codigo_qr, usada, fecha_uso, compra_id, compras(cantidad_entradas, total_pagado, fecha_evento, fecha_compra), eventos(titulo, fecha, hora, lugar, categoria, recurrente_diario)")
+        .eq("user_id", uid ?? "")
         .order("created_at", { ascending: false });
       const rows: Entrada[] = ((data as any[]) ?? []).map((r) => {
         const cant = r.compras?.cantidad_entradas ?? 1;
