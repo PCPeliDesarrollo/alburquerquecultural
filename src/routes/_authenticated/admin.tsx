@@ -318,14 +318,14 @@ function AdminPanel() {
           <div className="max-h-[60vh] overflow-auto rounded-md border border-border">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-muted"><tr>
-                <th className="p-2 text-left">Nombre</th><th className="p-2 text-left">Email</th>
+                <th className="p-2 text-left">Nombre y apellidos</th><th className="p-2 text-left">Email</th>
                 <th className="p-2">Entradas</th><th className="p-2">Total</th>
                 <th className="p-2 text-left">Localizador</th><th className="p-2">Fecha</th>
               </tr></thead>
               <tbody>
                 {asistentes.map((a) => (
                   <tr key={a.compra_id} className="border-t border-border">
-                    <td className="p-2">{a.nombre ?? "—"}</td>
+                    <td className="p-2">{[a.nombre, a.apellidos].filter(Boolean).join(" ") || "—"}</td>
                     <td className="p-2">{a.email}</td>
                     <td className="p-2 text-center">{a.cantidad}</td>
                     <td className="p-2 text-center">{Number(a.total).toFixed(2)} €</td>
