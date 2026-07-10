@@ -398,9 +398,9 @@ function AdminPanel() {
         <Modal onClose={() => setAsistentesDe(null)} title="Asistentes al evento" wide>
           <div className="mb-4 flex justify-end">
             <button
-              onClick={() => exportarCsv(eventos.find((e) => e.id === asistentesDe)!)}
-              className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent"
-            >Descargar CSV</button>
+              onClick={() => exportarPdf(eventos.find((e) => e.id === asistentesDe)!)}
+              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-sm hover:opacity-90"
+            >Descargar PDF</button>
           </div>
           <div className="max-h-[60vh] overflow-auto rounded-md border border-border">
             <table className="w-full text-sm">
