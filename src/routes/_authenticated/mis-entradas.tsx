@@ -76,6 +76,12 @@ function MisEntradas() {
         </p>
       </div>
 
+      {necesitaDatos && profile && (
+        <ProfileCompletar profile={profile} onSaved={(p) => setProfile({ ...profile, ...p })} />
+      )}
+
+
+
       {entradas === null ? (
         <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-40 animate-pulse rounded-xl bg-muted" />)}</div>
       ) : entradas.length === 0 ? (
