@@ -33,7 +33,7 @@ const CATEGORIAS = [
 const EMPTY: Partial<Evento> = {
   titulo: "", descripcion: "", categoria: "Teatro",
   fecha: "", hora: "20:00", lugar: "Casa de la Cultura", imagen_url: "",
-  precio: 0, aforo_maximo: 100, activo: true,
+  precio: 0, aforo_maximo: 100, activo: true, recurrente_diario: false,
 };
 
 function AdminPanel() {
