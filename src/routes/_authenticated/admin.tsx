@@ -55,9 +55,10 @@ function AdminPanel() {
   }, []);
 
   async function refresh() {
-    const { data } = await supabase.from("eventos").select("*").order("fecha", { ascending: true });
+    const { data } = await supabase.from("eventos").select("*").order("orden", { ascending: true }).order("fecha", { ascending: true });
     setEventos((data as Evento[]) ?? []);
   }
+
   useEffect(() => { if (isAdmin) refresh(); }, [isAdmin]);
 
   async function guardar() {
