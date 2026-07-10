@@ -12,7 +12,7 @@ type Evento = {
 };
 
 
-type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; fecha_compra: string };
+type Asistente = { compra_id: string; cantidad: number; total: number; codigo_qr: string; email: string; nombre: string | null; apellidos: string | null; fecha_compra: string };
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
@@ -106,19 +106,20 @@ function AdminPanel() {
     setAsistentesDe(evento.id);
     const { data } = await supabase
       .from("compras")
-      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, profiles(email, nombre)")
+      .select("id, cantidad_entradas, total_pagado, codigo_qr, fecha_compra, profiles(email, nombre, apellidos)")
       .eq("evento_id", evento.id)
       .order("fecha_compra", { ascending: false });
     setAsistentes(((data as any[]) ?? []).map((r) => ({
       compra_id: r.id, cantidad: r.cantidad_entradas, total: r.total_pagado,
       codigo_qr: r.codigo_qr, fecha_compra: r.fecha_compra,
       email: r.profiles?.email ?? "—", nombre: r.profiles?.nombre ?? null,
+      apellidos: r.profiles?.apellidos ?? null,
     })));
   }
 
   function exportarCsv(evento: Evento) {
-    const rows = [["Nombre", "Email", "Entradas", "Total (€)", "Localizador", "Fecha compra"]];
-    asistentes.forEach((a) => rows.push([a.nombre ?? "", a.email, String(a.cantidad), String(a.total), a.codigo_qr, new Date(a.fecha_compra).toISOString()]));
+    const rows = [["Nombre", "Apellidos", "Email", "Entradas", "Total (€)", "Localizador", "Fecha compra"]];
+    asistentes.forEach((a) => rows.push([a.nombre ?? "", a.apellidos ?? "", a.email, String(a.cantidad), String(a.total), a.codigo_qr, new Date(a.fecha_compra).toISOString()]));
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -317,14 +318,14 @@ function AdminPanel() {
           <div className="max-h-[60vh] overflow-auto rounded-md border border-border">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-muted"><tr>
-                <th className="p-2 text-left">Nombre</th><th className="p-2 text-left">Email</th>
+                <th className="p-2 text-left">Nombre y apellidos</th><th className="p-2 text-left">Email</th>
                 <th className="p-2">Entradas</th><th className="p-2">Total</th>
                 <th className="p-2 text-left">Localizador</th><th className="p-2">Fecha</th>
               </tr></thead>
               <tbody>
                 {asistentes.map((a) => (
                   <tr key={a.compra_id} className="border-t border-border">
-                    <td className="p-2">{a.nombre ?? "—"}</td>
+                    <td className="p-2">{[a.nombre, a.apellidos].filter(Boolean).join(" ") || "—"}</td>
                     <td className="p-2">{a.email}</td>
                     <td className="p-2 text-center">{a.cantidad}</td>
                     <td className="p-2 text-center">{Number(a.total).toFixed(2)} €</td>
