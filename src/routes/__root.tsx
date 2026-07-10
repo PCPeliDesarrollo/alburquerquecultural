@@ -167,7 +167,7 @@ function SiteFooter() {
     <footer className="border-t border-border bg-card/50">
       <div className="mx-auto flex max-w-7xl flex-col items-start gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <img src={logo.url} alt="" className="h-8 w-8 object-contain" />
+          <img src={logo.url} alt="" className="h-8 w-auto object-contain" />
           <span>© {new Date().getFullYear()} Ayuntamiento de Alburquerque · Badajoz</span>
         </div>
         <div>Plaza de España · 06510 Alburquerque</div>
