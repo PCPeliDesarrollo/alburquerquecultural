@@ -145,6 +145,18 @@ function AdminPanel() {
     { vendidas: 0, recaudado: 0, aforo: 0 }
   );
 
+  // Categorías presentes en los eventos (más "Todos") — se muestran como pestañas
+  const tabs = ["Todos", ...CATEGORIAS.filter((c) => eventos.some((e) => e.categoria === c))];
+  const eventosTab = tab === "Todos" ? eventos : eventos.filter((e) => e.categoria === tab);
+  const totalesTab = eventosTab.reduce(
+    (acc, e) => ({
+      vendidas: acc.vendidas + e.entradas_vendidas,
+      recaudado: acc.recaudado + e.entradas_vendidas * Number(e.precio),
+      aforo: acc.aforo + e.aforo_maximo,
+    }),
+    { vendidas: 0, recaudado: 0, aforo: 0 }
+  );
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -153,9 +165,9 @@ function AdminPanel() {
           <p className="text-sm text-muted-foreground">Gestiona el catálogo cultural del Ayuntamiento.</p>
         </div>
         <button
-          onClick={() => setEditing({ ...EMPTY })}
+          onClick={() => setEditing({ ...EMPTY, categoria: tab !== "Todos" ? tab : EMPTY.categoria })}
           className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground shadow-elegant hover:opacity-90"
-        >+ Nuevo evento</button>
+        >+ Nuevo{tab !== "Todos" ? ` en ${tab}` : " evento"}</button>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -164,7 +176,40 @@ function AdminPanel() {
         <Stat label="Recaudación total" value={`${totales.recaudado.toFixed(2)} €`} accent />
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card">
+      {/* Pestañas por tipo de entrada */}
+      <div className="mt-8 -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+        {tabs.map((c) => {
+          const count = c === "Todos" ? eventos.length : eventos.filter((e) => e.categoria === c).length;
+          const active = tab === c;
+          return (
+            <button
+              key={c}
+              onClick={() => setTab(c)}
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card hover:bg-accent"
+              }`}
+            >{c} <span className={`ml-1 text-xs ${active ? "opacity-80" : "text-muted-foreground"}`}>({count})</span></button>
+          );
+        })}
+      </div>
+
+      {/* Resumen del tipo seleccionado */}
+      {tab !== "Todos" && (
+        <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <div>
+              <div className="font-display text-xl text-primary">{tab}</div>
+              <div className="text-xs text-muted-foreground">
+                {eventosTab.length} evento(s) · {totalesTab.vendidas} / {totalesTab.aforo} entradas · {totalesTab.recaudado.toFixed(2)} € recaudados
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-muted/60 text-left">
             <tr>
@@ -174,13 +219,13 @@ function AdminPanel() {
             </tr>
           </thead>
           <tbody>
-            {eventos.map((e) => (
+            {eventosTab.map((e) => (
               <tr key={e.id} className="border-t border-border">
                 <td className="p-3">
                   <div className="font-medium">{e.titulo}</div>
                   <div className="text-xs text-muted-foreground">{e.categoria} · {e.lugar}</div>
                 </td>
-                <td className="p-3">{formatDate(e.fecha)}<div className="text-xs text-muted-foreground">{e.hora.slice(0,5)}</div></td>
+                <td className="p-3">{e.recurrente_diario ? <span className="text-[color:var(--gold)] font-medium">Diario</span> : formatDate(e.fecha)}<div className="text-xs text-muted-foreground">{e.hora.slice(0,5)}</div></td>
                 <td className="p-3">{e.entradas_vendidas} / {e.aforo_maximo}</td>
                 <td className="p-3">{(e.entradas_vendidas * Number(e.precio)).toFixed(2)} €</td>
                 <td className="p-3">
@@ -195,11 +240,14 @@ function AdminPanel() {
                 </td>
               </tr>
             ))}
-            {eventos.length === 0 && (
-              <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Aún no hay eventos. Crea el primero.</td></tr>
+            {eventosTab.length === 0 && (
+              <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">
+                {tab === "Todos" ? "Aún no hay eventos. Crea el primero." : `Aún no hay eventos en "${tab}". Crea el primero.`}
+              </td></tr>
             )}
           </tbody>
         </table>
+
       </div>
 
       {editing && (
