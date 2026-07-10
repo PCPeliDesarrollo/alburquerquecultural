@@ -55,6 +55,54 @@ export type Database = {
           },
         ]
       }
+      entradas: {
+        Row: {
+          codigo_qr: string
+          compra_id: string
+          created_at: string
+          evento_id: string
+          fecha_uso: string | null
+          id: string
+          usada: boolean
+          user_id: string
+        }
+        Insert: {
+          codigo_qr?: string
+          compra_id: string
+          created_at?: string
+          evento_id: string
+          fecha_uso?: string | null
+          id?: string
+          usada?: boolean
+          user_id: string
+        }
+        Update: {
+          codigo_qr?: string
+          compra_id?: string
+          created_at?: string
+          evento_id?: string
+          fecha_uso?: string | null
+          id?: string
+          usada?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entradas_compra_id_fkey"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entradas_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "eventos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       eventos: {
         Row: {
           activo: boolean
@@ -114,18 +162,21 @@ export type Database = {
       }
       profiles: {
         Row: {
+          apellidos: string | null
           created_at: string
           email: string
           id: string
           nombre: string | null
         }
         Insert: {
+          apellidos?: string | null
           created_at?: string
           email: string
           id: string
           nombre?: string | null
         }
         Update: {
+          apellidos?: string | null
           created_at?: string
           email?: string
           id?: string
