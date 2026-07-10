@@ -71,7 +71,7 @@ function AdminPanel() {
       titulo: editing.titulo,
       descripcion: editing.descripcion,
       categoria: editing.categoria,
-      fecha: esDiario ? hoyISO : editing.fecha,
+      fecha: esDiario ? hoyISO : editing.fecha!,
       hora: editing.hora,
       lugar: editing.lugar,
       imagen_url: editing.imagen_url || null,
