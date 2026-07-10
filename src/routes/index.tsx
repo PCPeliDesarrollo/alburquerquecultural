@@ -15,6 +15,7 @@ type Evento = {
   precio: number;
   aforo_maximo: number;
   entradas_vendidas: number;
+  recurrente_diario: boolean;
 };
 
 export const Route = createFileRoute("/")({
