@@ -54,15 +54,15 @@ function Home() {
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs uppercase tracking-widest">
               <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--gold)]" />
-              Villa medieval de Extremadura
+              Alburquerque Cultural · Badajoz
             </div>
             <h1 className="mt-5 font-display text-4xl leading-tight sm:text-6xl">
               Vive Alburquerque.<br />
-              <span className="text-[color:var(--gold)]">Vive su historia.</span>
+              <span className="text-[color:var(--gold)]">Toda su cultura, en una entrada.</span>
             </h1>
             <p className="mt-5 max-w-xl text-white/80">
-              Compra tus entradas para el Festival Medieval, teatro en el Castillo de Luna y todos
-              los eventos culturales del Ayuntamiento.
+              Compra tus entradas para el teatro en la Casa de la Cultura, la piscina municipal,
+              el Festival Medieval, conciertos, actividades infantiles y deportivas del Ayuntamiento.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#catalogo" className="rounded-md bg-[color:var(--gold)] px-5 py-3 font-semibold text-[color:var(--gold-foreground)] shadow-gold transition hover:brightness-105">
