@@ -124,9 +124,35 @@ function AuthPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Contraseña</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
-              className="h-11 w-full rounded-md border border-input bg-background px-3" />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="h-11 w-full rounded-md border border-input bg-background px-3 pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
+          <label className="flex cursor-pointer select-none items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="h-4 w-4 rounded border-input accent-primary"
+            />
+            Recordar mis datos en este dispositivo
+          </label>
           <button type="submit" disabled={loading}
             className="mt-2 h-11 w-full rounded-md bg-primary font-semibold text-primary-foreground shadow-elegant transition hover:opacity-90 disabled:opacity-60">
             {loading ? "Procesando…" : mode === "login" ? "Acceder" : "Crear cuenta"}
