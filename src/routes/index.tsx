@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/logo-alburquerque-transparente-v2.png.asset.json";
+import fullLogo from "@/assets/logo-alburquerque-transparente-v2.png.asset.json";
+import logo from "@/assets/logo-shield-alburquerque.png.asset.json";
 
 type Evento = {
   id: string;
