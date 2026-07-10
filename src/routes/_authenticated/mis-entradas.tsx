@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Mail, Share2, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "../index";
 import logo from "@/assets/logo-alburquerque.png.asset.json";
@@ -26,9 +27,21 @@ export const Route = createFileRoute("/_authenticated/mis-entradas")({
 
 function MisEntradas() {
   const [entradas, setEntradas] = useState<Entrada[] | null>(null);
+  const [profile, setProfile] = useState<{ id: string; nombre: string | null; apellidos: string | null } | null>(null);
 
   useEffect(() => {
     (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (uid) {
+        const { data: p } = await supabase
+          .from("profiles")
+          .select("id, nombre, apellidos")
+          .eq("id", uid)
+          .maybeSingle();
+        setProfile(p ?? { id: uid, nombre: null, apellidos: null });
+      }
+
       const { data } = await supabase
         .from("entradas")
         .select("id, codigo_qr, usada, fecha_uso, compra_id, compras(cantidad_entradas, total_pagado, fecha_evento, fecha_compra), eventos(titulo, fecha, hora, lugar, categoria, recurrente_diario)")
@@ -52,6 +65,8 @@ function MisEntradas() {
     })();
   }, []);
 
+  const necesitaDatos = !!profile && (!profile.nombre?.trim() || !profile.apellidos?.trim());
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="mb-8">
@@ -60,6 +75,12 @@ function MisEntradas() {
           Cada entrada es individual y de un solo uso. Muestra el localizador en la entrada del evento.
         </p>
       </div>
+
+      {necesitaDatos && profile && (
+        <ProfileCompletar profile={profile} onSaved={(p) => setProfile({ ...profile, ...p })} />
+      )}
+
+
 
       {entradas === null ? (
         <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-40 animate-pulse rounded-xl bg-muted" />)}</div>
@@ -79,6 +100,72 @@ function MisEntradas() {
         </div>
       )}
     </div>
+  );
+}
+
+function ProfileCompletar({
+  profile,
+  onSaved,
+}: {
+  profile: { id: string; nombre: string | null; apellidos: string | null };
+  onSaved: (p: { nombre: string; apellidos: string }) => void;
+}) {
+  const [nombre, setNombre] = useState(profile.nombre ?? "");
+  const [apellidos, setApellidos] = useState(profile.apellidos ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function guardar(ev: React.FormEvent) {
+    ev.preventDefault();
+    if (!nombre.trim() || !apellidos.trim()) {
+      toast.error("Nombre y apellidos son obligatorios");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ nombre: nombre.trim(), apellidos: apellidos.trim() })
+      .eq("id", profile.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Datos actualizados");
+    onSaved({ nombre: nombre.trim(), apellidos: apellidos.trim() });
+  }
+
+  return (
+    <form
+      onSubmit={guardar}
+      className="mb-6 rounded-2xl border border-[color:var(--gold)]/40 bg-[color:var(--gold)]/10 p-5"
+    >
+      <div className="mb-3">
+        <h3 className="font-display text-lg text-primary">Completa tus datos</h3>
+        <p className="text-xs text-muted-foreground">
+          Necesitamos tu nombre y apellidos para que aparezcan en el listado de asistentes del evento.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+        <input
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          placeholder="Nombre"
+          required
+          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+        />
+        <input
+          value={apellidos}
+          onChange={(e) => setApellidos(e.target.value)}
+          placeholder="Apellidos"
+          required
+          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="h-10 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-60"
+        >
+          {saving ? "Guardando…" : "Guardar"}
+        </button>
+      </div>
+    </form>
   );
 }
 
