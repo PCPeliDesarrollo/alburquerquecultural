@@ -136,48 +136,64 @@ function AdminPanel() {
     </div>
   );
 
-  const totales = eventos.reduce(
-    (acc, e) => ({
-      vendidas: acc.vendidas + e.entradas_vendidas,
-      recaudado: acc.recaudado + e.entradas_vendidas * Number(e.precio),
-      aforo: acc.aforo + e.aforo_maximo,
-    }),
-    { vendidas: 0, recaudado: 0, aforo: 0 }
-  );
-
   // Categorías presentes en los eventos (más "Todos") — se muestran como pestañas
   const tabs = ["Todos", ...CATEGORIAS.filter((c) => eventos.some((e) => e.categoria === c))];
   const eventosTab = tab === "Todos" ? eventos : eventos.filter((e) => e.categoria === tab);
-  const totalesTab = eventosTab.reduce(
-    (acc, e) => ({
-      vendidas: acc.vendidas + e.entradas_vendidas,
-      recaudado: acc.recaudado + e.entradas_vendidas * Number(e.precio),
-      aforo: acc.aforo + e.aforo_maximo,
-    }),
-    { vendidas: 0, recaudado: 0, aforo: 0 }
-  );
+
+
+  // Totales por cada tipo de entrada para las tarjetas compactas
+  const totalesPorCategoria = CATEGORIAS.filter((c) => eventos.some((e) => e.categoria === c)).map((c) => {
+    const evs = eventos.filter((e) => e.categoria === c);
+    return {
+      categoria: c,
+      activos: evs.filter((e) => e.activo).length,
+      vendidas: evs.reduce((s, e) => s + e.entradas_vendidas, 0),
+      aforo: evs.reduce((s, e) => s + e.aforo_maximo, 0),
+      recaudado: evs.reduce((s, e) => s + e.entradas_vendidas * Number(e.precio), 0),
+    };
+  });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-primary">Panel de administración</h1>
-          <p className="text-sm text-muted-foreground">Gestiona el catálogo cultural del Ayuntamiento.</p>
+          <h1 className="font-display text-2xl text-primary">Panel de administración</h1>
+          <p className="text-xs text-muted-foreground">Gestiona el catálogo cultural del Ayuntamiento.</p>
         </div>
         <button
           onClick={() => setEditing({ ...EMPTY, categoria: tab !== "Todos" ? tab : EMPTY.categoria })}
-          className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground shadow-elegant hover:opacity-90"
+          className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-elegant hover:opacity-90"
         >+ Nuevo{tab !== "Todos" ? ` en ${tab}` : " evento"}</button>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <Stat label="Eventos activos" value={eventos.filter((e) => e.activo).length.toString()} />
-        <Stat label="Entradas vendidas" value={`${totales.vendidas} / ${totales.aforo}`} />
-        <Stat label="Recaudación total" value={`${totales.recaudado.toFixed(2)} €`} accent />
+      {/* Tarjetas compactas por tipo de entrada */}
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {totalesPorCategoria.map((t) => (
+          <div
+            key={t.categoria}
+            className={`rounded-lg border p-2.5 text-xs ${tab === t.categoria ? "border-primary bg-primary/5" : "border-border bg-card"}`}
+          >
+            <div className="mb-2 font-display text-sm font-semibold text-primary">{t.categoria}</div>
+            <div className="flex flex-col gap-0.5">
+              <div className="flex justify-between text-muted-foreground">
+                <span>Eventos activos</span>
+                <span className="font-medium text-foreground">{t.activos}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Entradas vendidas</span>
+                <span className="font-medium text-foreground">{t.vendidas} / {t.aforo}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Recaudación</span>
+                <span className="font-medium text-foreground">{t.recaudado.toFixed(2)} €</span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Pestañas por tipo de entrada */}
-      <div className="mt-8 -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+      <div className="mt-5 -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
         {tabs.map((c) => {
           const count = c === "Todos" ? eventos.length : eventos.filter((e) => e.categoria === c).length;
           const active = tab === c;
@@ -185,29 +201,16 @@ function AdminPanel() {
             <button
               key={c}
               onClick={() => setTab(c)}
-              className={`shrink-0 rounded-full border px-4 py-1.5 text-sm transition ${
+              className={`shrink-0 rounded-full border px-3 py-1 text-xs transition ${
                 active
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card hover:bg-accent"
               }`}
-            >{c} <span className={`ml-1 text-xs ${active ? "opacity-80" : "text-muted-foreground"}`}>({count})</span></button>
+            >{c} <span className={`ml-1 text-[10px] ${active ? "opacity-80" : "text-muted-foreground"}`}>({count})</span></button>
           );
         })}
       </div>
 
-      {/* Resumen del tipo seleccionado */}
-      {tab !== "Todos" && (
-        <div className="mt-4 rounded-2xl border border-border bg-muted/30 p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <div>
-              <div className="font-display text-xl text-primary">{tab}</div>
-              <div className="text-xs text-muted-foreground">
-                {eventosTab.length} evento(s) · {totalesTab.vendidas} / {totalesTab.aforo} entradas · {totalesTab.recaudado.toFixed(2)} € recaudados
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
         <table className="w-full text-sm">
@@ -342,16 +345,8 @@ function AdminPanel() {
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className={`rounded-2xl border border-border p-5 ${accent ? "bg-primary text-primary-foreground" : "bg-card"}`}>
-      <div className={`text-xs uppercase tracking-widest ${accent ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{label}</div>
-      <div className="mt-1 font-display text-2xl">{value}</div>
-    </div>
-  );
-}
-
 function Field({ label, children, full }: { label: string; children: React.ReactNode; full?: boolean }) {
+
   return (
     <div className={full ? "sm:col-span-2" : ""}>
       <label className="mb-1 block text-sm font-medium">{label}</label>
