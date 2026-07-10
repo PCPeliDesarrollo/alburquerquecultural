@@ -11,8 +11,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
-import logo from "@/assets/logo-shield-alburquerque.png.asset.json";
-import fullLogo from "@/assets/logo-alburquerque-transparente-v2.png.asset.json";
+import logo from "@/assets/logo-alburquerque.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -133,7 +132,7 @@ function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
         <Link to="/" className="flex min-w-0 items-center gap-3">
-          <img src={logo.url} alt="Ayuntamiento de Alburquerque" className="h-11 w-auto shrink-0 object-contain" />
+          <img src={logo.url} alt="Escudo de Alburquerque" className="h-11 w-11 shrink-0 object-contain" />
           <div className="min-w-0 leading-tight">
             <div className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Alburquerque Cultural</div>
             <div className="truncate text-xs text-muted-foreground">Ayuntamiento · Entradas y actividades</div>
@@ -168,7 +167,7 @@ function SiteFooter() {
     <footer className="border-t border-border bg-card/50">
       <div className="mx-auto flex max-w-7xl flex-col items-start gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <img src={logo.url} alt="" className="h-8 w-auto object-contain" />
+          <img src={logo.url} alt="" className="h-8 w-8 object-contain" />
           <span>© {new Date().getFullYear()} Ayuntamiento de Alburquerque · Badajoz</span>
         </div>
         <div>Plaza de España · 06510 Alburquerque</div>

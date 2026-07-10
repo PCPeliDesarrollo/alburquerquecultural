@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo-alburquerque.png.asset.json";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
+const REMEMBER_KEY = "alb_remember_email";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s) => searchSchema.parse(s),
@@ -21,8 +23,17 @@ function AuthPage() {
   const [nombre, setNombre] = useState("");
   const [apellidos, setApellidos] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(true);
 
   useEffect(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBER_KEY);
+      if (saved) {
+        setEmail(saved);
+        setRemember(true);
+      }
+    } catch {}
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: redirect ?? "/" });
     });
@@ -42,12 +53,15 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Cuenta creada. Ya puedes acceder.");
-        // Auto sign-in (email confirm off by default)
         const { error: e2 } = await supabase.auth.signInWithPassword({ email, password });
-        if (!e2) navigate({ to: redirect ?? "/" });
+        if (!e2) {
+          persistRemember();
+          navigate({ to: redirect ?? "/" });
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        persistRemember();
         toast.success("Bienvenido");
         navigate({ to: redirect ?? "/" });
       }
@@ -56,6 +70,13 @@ function AuthPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function persistRemember() {
+    try {
+      if (remember) localStorage.setItem(REMEMBER_KEY, email);
+      else localStorage.removeItem(REMEMBER_KEY);
+    } catch {}
   }
 
   return (
@@ -103,9 +124,35 @@ function AuthPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">Contraseña</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
-              className="h-11 w-full rounded-md border border-input bg-background px-3" />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="h-11 w-full rounded-md border border-input bg-background px-3 pr-11"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
+          <label className="flex cursor-pointer select-none items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="h-4 w-4 rounded border-input accent-primary"
+            />
+            Recordar mis datos en este dispositivo
+          </label>
           <button type="submit" disabled={loading}
             className="mt-2 h-11 w-full rounded-md bg-primary font-semibold text-primary-foreground shadow-elegant transition hover:opacity-90 disabled:opacity-60">
             {loading ? "Procesando…" : mode === "login" ? "Acceder" : "Crear cuenta"}
