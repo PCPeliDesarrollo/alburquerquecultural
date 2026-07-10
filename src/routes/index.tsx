@@ -112,7 +112,7 @@ function Home() {
             </div>
           </div>
           <div className="hidden justify-center md:flex">
-            <img src={logo.url} alt="Escudo del Ayuntamiento" className="w-56 drop-shadow-2xl" />
+            <img src={fullLogo.url} alt="Escudo del Ayuntamiento" className="w-72 drop-shadow-2xl" />
           </div>
         </div>
       </section>
