@@ -117,15 +117,102 @@ function AdminPanel() {
     })));
   }
 
-  function exportarCsv(evento: Evento) {
-    const rows = [["Nombre", "Apellidos", "Email", "Entradas", "Total (€)", "Localizador", "Fecha compra"]];
-    asistentes.forEach((a) => rows.push([a.nombre ?? "", a.apellidos ?? "", a.email, String(a.cantidad), String(a.total), a.codigo_qr, new Date(a.fecha_compra).toISOString()]));
-    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `asistentes-${evento.titulo.replace(/\s+/g, "_")}.csv`; a.click();
-    URL.revokeObjectURL(url);
+  async function exportarPdf(evento: Evento) {
+    const { default: jsPDF } = await import("jspdf");
+    const { default: autoTable } = await import("jspdf-autotable");
+
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const primary: [number, number, number] = [122, 30, 30]; // burgundy
+    const gold: [number, number, number] = [200, 155, 63];
+    const cream: [number, number, number] = [251, 245, 232];
+
+    // Header band
+    doc.setFillColor(...primary);
+    doc.rect(0, 0, pageWidth, 90, "F");
+    doc.setFillColor(...gold);
+    doc.rect(0, 90, pageWidth, 4, "F");
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("ALBURQUERQUE CULTURAL", 40, 42);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("Listado de asistentes", 40, 60);
+    doc.setFontSize(9);
+    doc.setTextColor(255, 236, 200);
+    doc.text(new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" }), pageWidth - 40, 42, { align: "right" });
+
+    // Event summary card
+    doc.setFillColor(...cream);
+    doc.roundedRect(40, 110, pageWidth - 80, 78, 6, 6, "F");
+    doc.setTextColor(...primary);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text(evento.titulo, 56, 132);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(70, 60, 55);
+    doc.text(`Categoría:  ${evento.categoria}`, 56, 150);
+    doc.text(`Fecha:  ${formatDate(evento.fecha)} · ${evento.hora.slice(0, 5)}`, 56, 165);
+    doc.text(`Lugar:  ${evento.lugar}`, 56, 180);
+
+    const totalEntradas = asistentes.reduce((s, a) => s + Number(a.cantidad || 0), 0);
+    const recaudacion = asistentes.reduce((s, a) => s + Number(a.total || 0), 0);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primary);
+    doc.setFontSize(10);
+    doc.text(`${asistentes.length} compras`, pageWidth - 56, 150, { align: "right" });
+    doc.text(`${totalEntradas} entradas`, pageWidth - 56, 165, { align: "right" });
+    doc.text(`${recaudacion.toFixed(2)} €`, pageWidth - 56, 180, { align: "right" });
+
+    // Table
+    autoTable(doc, {
+      startY: 208,
+      head: [["#", "Nombre y apellidos", "Email", "Entradas", "Total", "Localizador", "Fecha"]],
+      body: asistentes.map((a, i) => [
+        String(i + 1),
+        [a.nombre, a.apellidos].filter(Boolean).join(" ") || "—",
+        a.email,
+        String(a.cantidad),
+        `${Number(a.total).toFixed(2)} €`,
+        a.codigo_qr,
+        new Date(a.fecha_compra).toLocaleDateString("es-ES"),
+      ]),
+      styles: { font: "helvetica", fontSize: 9, cellPadding: 6, textColor: [40, 30, 30], lineColor: [230, 220, 210], lineWidth: 0.4 },
+      headStyles: { fillColor: primary, textColor: [255, 255, 255], fontStyle: "bold", halign: "left" },
+      alternateRowStyles: { fillColor: [252, 248, 240] },
+      columnStyles: {
+        0: { cellWidth: 26, halign: "center", textColor: gold, fontStyle: "bold" },
+        3: { halign: "center" },
+        4: { halign: "right" },
+        5: { font: "courier", fontSize: 8 },
+      },
+      margin: { left: 40, right: 40 },
+      didDrawPage: () => {
+        const h = doc.internal.pageSize.getHeight();
+        doc.setDrawColor(...gold);
+        doc.setLineWidth(0.5);
+        doc.line(40, h - 40, pageWidth - 40, h - 40);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(140, 130, 120);
+        doc.text("Alburquerque Cultural · Ayuntamiento de Alburquerque", 40, h - 26);
+        const page = doc.getNumberOfPages();
+        doc.text(`Página ${page}`, pageWidth - 40, h - 26, { align: "right" });
+      },
+    });
+
+    if (asistentes.length === 0) {
+      doc.setFont("helvetica", "italic");
+      doc.setTextColor(140, 130, 120);
+      doc.setFontSize(11);
+      doc.text("Sin compras registradas todavía.", pageWidth / 2, 260, { align: "center" });
+    }
+
+    doc.save(`asistentes-${evento.titulo.replace(/\s+/g, "_")}.pdf`);
+    toast.success("PDF generado");
   }
 
   if (isAdmin === null) return <div className="mx-auto max-w-6xl px-4 py-16">Cargando…</div>;
@@ -311,9 +398,9 @@ function AdminPanel() {
         <Modal onClose={() => setAsistentesDe(null)} title="Asistentes al evento" wide>
           <div className="mb-4 flex justify-end">
             <button
-              onClick={() => exportarCsv(eventos.find((e) => e.id === asistentesDe)!)}
-              className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-accent"
-            >Descargar CSV</button>
+              onClick={() => exportarPdf(eventos.find((e) => e.id === asistentesDe)!)}
+              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-sm hover:opacity-90"
+            >Descargar PDF</button>
           </div>
           <div className="max-h-[60vh] overflow-auto rounded-md border border-border">
             <table className="w-full text-sm">
