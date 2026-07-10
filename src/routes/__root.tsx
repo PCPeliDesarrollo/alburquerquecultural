@@ -139,7 +139,7 @@ function SiteHeader() {
           </div>
         </Link>
         <nav className="ml-auto flex items-center gap-1 text-sm">
-          <Link to="/" className="rounded-md px-3 py-2 hover:bg-accent" activeOptions={{ exact: true }} activeProps={{ className: "text-primary font-semibold" }}>Eventos</Link>
+
           {session && (
             <Link to="/mis-entradas" className="rounded-md px-3 py-2 hover:bg-accent" activeProps={{ className: "text-primary font-semibold" }}>Mis entradas</Link>
           )}
