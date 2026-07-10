@@ -67,11 +67,13 @@ function EventoDetalle() {
     setComprando(true);
     // Pago simulado
     await new Promise((r) => setTimeout(r, 900));
+    const fechaEvento = evento!.recurrente_diario ? hoyISO() : evento!.fecha;
     const { error } = await supabase.from("compras").insert({
       user_id: session.id,
       evento_id: evento!.id,
       cantidad_entradas: cantidad,
       total_pagado: total,
+      fecha_evento: fechaEvento,
     });
     setComprando(false);
     if (error) {
@@ -81,6 +83,8 @@ function EventoDetalle() {
     toast.success("¡Compra realizada! Consulta tus entradas.");
     navigate({ to: "/mis-entradas" });
   }
+
+  const fechaMostrada = evento.recurrente_diario ? hoyISO() : evento.fecha;
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-10">
