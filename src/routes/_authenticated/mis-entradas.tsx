@@ -103,6 +103,72 @@ function MisEntradas() {
   );
 }
 
+function ProfileCompletar({
+  profile,
+  onSaved,
+}: {
+  profile: { id: string; nombre: string | null; apellidos: string | null };
+  onSaved: (p: { nombre: string; apellidos: string }) => void;
+}) {
+  const [nombre, setNombre] = useState(profile.nombre ?? "");
+  const [apellidos, setApellidos] = useState(profile.apellidos ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function guardar(ev: React.FormEvent) {
+    ev.preventDefault();
+    if (!nombre.trim() || !apellidos.trim()) {
+      toast.error("Nombre y apellidos son obligatorios");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ nombre: nombre.trim(), apellidos: apellidos.trim() })
+      .eq("id", profile.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success("Datos actualizados");
+    onSaved({ nombre: nombre.trim(), apellidos: apellidos.trim() });
+  }
+
+  return (
+    <form
+      onSubmit={guardar}
+      className="mb-6 rounded-2xl border border-[color:var(--gold)]/40 bg-[color:var(--gold)]/10 p-5"
+    >
+      <div className="mb-3">
+        <h3 className="font-display text-lg text-primary">Completa tus datos</h3>
+        <p className="text-xs text-muted-foreground">
+          Necesitamos tu nombre y apellidos para que aparezcan en el listado de asistentes del evento.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+        <input
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          placeholder="Nombre"
+          required
+          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+        />
+        <input
+          value={apellidos}
+          onChange={(e) => setApellidos(e.target.value)}
+          placeholder="Apellidos"
+          required
+          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="h-10 rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-60"
+        >
+          {saving ? "Guardando…" : "Guardar"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function TicketCard({ e, num, total }: { e: Entrada; num: number; total: number; idx: number }) {
   const titulo = e.evento?.titulo ?? "Evento";
   const fechaTxt = e.evento ? `${formatDate(e.fecha_evento ?? e.evento.fecha)} · ${e.evento.hora.slice(0, 5)}` : "";
