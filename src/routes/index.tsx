@@ -31,9 +31,11 @@ function Home() {
       .from("eventos")
       .select("*")
       .eq("activo", true)
+      .order("orden", { ascending: true })
       .order("fecha", { ascending: true })
       .then(({ data }) => setEventos((data as Evento[]) ?? []));
   }, []);
+
 
   const categorias = useMemo(() => {
     const set = new Set<string>(["Todos"]);
