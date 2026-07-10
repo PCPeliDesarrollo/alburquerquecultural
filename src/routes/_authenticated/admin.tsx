@@ -211,7 +211,12 @@ function AdminPanel() {
             </Field>
             <Field label="Hora"><input type="time" className="input" value={editing.hora ?? ""} onChange={(e) => setEditing({ ...editing, hora: e.target.value })} /></Field>
             <Field label="Lugar"><input className="input" value={editing.lugar ?? ""} onChange={(e) => setEditing({ ...editing, lugar: e.target.value })} /></Field>
-            <Field label="Imagen (URL)"><input className="input" value={editing.imagen_url ?? ""} onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })} /></Field>
+            <Field label="Imagen del evento" full>
+              <ImagenUploader
+                value={editing.imagen_url ?? ""}
+                onChange={(url) => setEditing({ ...editing, imagen_url: url })}
+              />
+            </Field>
             <Field label="Precio (€)"><input type="number" step="0.01" className="input" value={editing.precio ?? 0} onChange={(e) => setEditing({ ...editing, precio: Number(e.target.value) })} /></Field>
             <Field label="Aforo máximo"><input type="number" className="input" value={editing.aforo_maximo ?? 0} onChange={(e) => setEditing({ ...editing, aforo_maximo: Number(e.target.value) })} /></Field>
             <Field label="Descripción" full>
