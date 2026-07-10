@@ -69,18 +69,19 @@ function Home() {
         </div>
 
         {eventos === null ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-48 animate-pulse rounded-xl bg-muted" />
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="h-32 animate-pulse rounded-lg bg-muted" />
             ))}
           </div>
         ) : visibles.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
             {visibles.map((e) => <EventoCard key={e.id} evento={e} />)}
           </div>
         )}
+
       </section>
 
       {/* Hero — ahora al final, como presentación */}
