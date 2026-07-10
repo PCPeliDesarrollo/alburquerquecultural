@@ -44,6 +44,8 @@ function AdminPanel() {
   const [editing, setEditing] = useState<Partial<Evento> | null>(null);
   const [asistentesDe, setAsistentesDe] = useState<string | null>(null);
   const [asistentes, setAsistentes] = useState<Asistente[]>([]);
+  const [tab, setTab] = useState<string>("Todos");
+
 
   useEffect(() => {
     (async () => {
