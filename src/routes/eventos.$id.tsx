@@ -17,7 +17,14 @@ type Evento = {
   precio: number;
   aforo_maximo: number;
   entradas_vendidas: number;
+  recurrente_diario: boolean;
 };
+
+function hoyISO() {
+  const d = new Date();
+  const tz = d.getTimezoneOffset();
+  return new Date(d.getTime() - tz * 60000).toISOString().slice(0, 10);
+}
 
 export const Route = createFileRoute("/eventos/$id")({
   component: EventoDetalle,
