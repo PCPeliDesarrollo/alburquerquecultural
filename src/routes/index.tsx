@@ -124,44 +124,51 @@ function EventoCard({ evento }: { evento: Evento }) {
     <Link
       to="/eventos/$id"
       params={{ id: evento.id }}
-      className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-elegant"
+      className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-elegant"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-muted">
         {evento.imagen_url ? (
           <img src={evento.imagen_url} alt={evento.titulo} className="h-full w-full object-cover transition group-hover:scale-105" />
         ) : (
           <div className="flex h-full w-full items-center justify-center" style={{ background: "var(--gradient-hero)" }}>
-            <img src={logo.url} alt="" className="h-20 opacity-70" />
+            <img src={logo.url} alt="" className="h-12 opacity-70" />
           </div>
         )}
-        <span className="absolute left-3 top-3 rounded-full bg-[color:var(--gold)] px-3 py-1 text-xs font-semibold text-[color:var(--gold-foreground)]">
+        <span className="absolute left-1.5 top-1.5 rounded-full bg-[color:var(--gold)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--gold-foreground)]">
           {evento.categoria}
         </span>
         {agotado && (
-          <span className="absolute right-3 top-3 rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-destructive-foreground">
+          <span className="absolute right-1.5 top-1.5 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold text-destructive-foreground">
             Agotado
           </span>
         )}
       </div>
-      <div className="p-5">
-        <h3 className="font-display text-xl leading-tight text-foreground">{evento.titulo}</h3>
-        <div className="mt-2 text-sm text-muted-foreground">
+      <div className="p-2.5 sm:p-3">
+        <h3 className="line-clamp-2 font-display text-sm leading-tight text-foreground sm:text-base">{evento.titulo}</h3>
+        <div className="mt-1 line-clamp-1 text-[11px] text-muted-foreground sm:text-xs">
           {evento.recurrente_diario
-            ? <><span className="font-medium text-[color:var(--gold)]">Todos los días</span> · {evento.hora.slice(0, 5)} · {evento.lugar}</>
-            : <>{formatDate(evento.fecha)} · {evento.hora.slice(0, 5)} · {evento.lugar}</>}
+            ? <><span className="font-medium text-[color:var(--gold)]">Todos los días</span> · {evento.hora.slice(0, 5)}</>
+            : <>{formatDateShort(evento.fecha)} · {evento.hora.slice(0, 5)}</>}
         </div>
-        <div className="mt-4 flex items-center justify-between">
-          <div className="text-lg font-semibold text-primary">
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <div className="text-sm font-semibold text-primary sm:text-base">
             {evento.precio > 0 ? `${Number(evento.precio).toFixed(2)} €` : "Gratis"}
           </div>
-          <div className="text-xs text-muted-foreground">
-            {evento.recurrente_diario ? "Entrada diaria" : `${evento.aforo_maximo - evento.entradas_vendidas} plazas`}
+          <div className="truncate text-[10px] text-muted-foreground sm:text-xs">
+            {evento.recurrente_diario ? "Diaria" : `${disponibles} plazas`}
           </div>
         </div>
       </div>
     </Link>
   );
 }
+
+export function formatDateShort(d: string) {
+  return new Date(d + "T00:00:00").toLocaleDateString("es-ES", {
+    day: "numeric", month: "short",
+  });
+}
+
 
 function EmptyState() {
   return (
