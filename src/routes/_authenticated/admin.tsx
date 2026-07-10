@@ -60,21 +60,25 @@ function AdminPanel() {
 
   async function guardar() {
     if (!editing) return;
-    if (!editing.titulo || !editing.descripcion || !editing.fecha || !editing.hora || !editing.lugar || !editing.categoria) {
+    const esDiario = !!editing.recurrente_diario;
+    if (!editing.titulo || !editing.descripcion || !editing.hora || !editing.lugar || !editing.categoria || (!esDiario && !editing.fecha)) {
       toast.error("Rellena todos los campos obligatorios");
       return;
     }
+    const hoy = new Date();
+    const hoyISO = new Date(hoy.getTime() - hoy.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     const payload = {
       titulo: editing.titulo,
       descripcion: editing.descripcion,
       categoria: editing.categoria,
-      fecha: editing.fecha,
+      fecha: esDiario ? hoyISO : editing.fecha,
       hora: editing.hora,
       lugar: editing.lugar,
       imagen_url: editing.imagen_url || null,
       precio: Number(editing.precio) || 0,
       aforo_maximo: Number(editing.aforo_maximo) || 0,
       activo: editing.activo ?? true,
+      recurrente_diario: esDiario,
     };
     const res = editing.id
       ? await supabase.from("eventos").update(payload).eq("id", editing.id)
