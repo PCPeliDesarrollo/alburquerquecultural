@@ -317,3 +317,73 @@ function Modal({ children, onClose, title, wide }: { children: React.ReactNode; 
     </div>
   );
 }
+
+function ImagenUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [subiendo, setSubiendo] = useState(false);
+
+  async function subir(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Selecciona un archivo de imagen (JPG, PNG, WEBP...)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("La imagen no puede superar los 5 MB");
+      return;
+    }
+    setSubiendo(true);
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("eventos").upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+    setSubiendo(false);
+    if (error) {
+      toast.error(`No se pudo subir la imagen: ${error.message}`);
+      return;
+    }
+    const { data } = supabase.storage.from("eventos").getPublicUrl(path);
+    onChange(data.publicUrl);
+    toast.success("Imagen subida correctamente");
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <label className={`inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-accent ${subiendo ? "pointer-events-none opacity-60" : ""}`}>
+          {subiendo ? "Subiendo…" : "📷 Subir desde el ordenador"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={subiendo}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) subir(f);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="text-xs text-destructive hover:underline"
+          >Quitar imagen</button>
+        )}
+      </div>
+      <input
+        className="input"
+        placeholder="…o pega una URL de imagen"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <div className="overflow-hidden rounded-md border border-border bg-muted">
+          <img src={value} alt="Vista previa" className="max-h-48 w-full object-cover" />
+        </div>
+      )}
+    </div>
+  );
+}
