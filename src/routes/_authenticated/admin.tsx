@@ -303,10 +303,14 @@ function Field({ label, children, full }: { label: string; children: React.React
 
 function Modal({ children, onClose, title, wide }: { children: React.ReactNode; onClose: () => void; title: string; wide?: boolean }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
       <div
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        className={`w-full ${wide ? "max-w-4xl" : "max-w-2xl"} rounded-2xl border border-border bg-background p-6 shadow-elegant`}
+        className={`w-full ${wide ? "max-w-4xl" : "max-w-2xl"} max-h-[90vh] overflow-y-auto rounded-2xl border border-border bg-background p-6 shadow-elegant`}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-xl text-primary">{title}</h2>
