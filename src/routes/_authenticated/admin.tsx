@@ -345,16 +345,8 @@ function AdminPanel() {
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className={`rounded-2xl border border-border p-5 ${accent ? "bg-primary text-primary-foreground" : "bg-card"}`}>
-      <div className={`text-xs uppercase tracking-widest ${accent ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{label}</div>
-      <div className="mt-1 font-display text-2xl">{value}</div>
-    </div>
-  );
-}
-
 function Field({ label, children, full }: { label: string; children: React.ReactNode; full?: boolean }) {
+
   return (
     <div className={full ? "sm:col-span-2" : ""}>
       <label className="mb-1 block text-sm font-medium">{label}</label>
