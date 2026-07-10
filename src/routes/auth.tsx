@@ -19,6 +19,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nombre, setNombre] = useState("");
+  const [apellidos, setApellidos] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
