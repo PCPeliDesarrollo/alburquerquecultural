@@ -83,8 +83,8 @@ function Home() {
       <section id="catalogo" className="mx-auto max-w-7xl px-4 py-14">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-3xl text-primary">Próximos eventos</h2>
-            <p className="text-sm text-muted-foreground">Cultura, tradición y patrimonio en el corazón de la villa.</p>
+            <h2 className="font-display text-3xl text-primary">Próximas actividades</h2>
+            <p className="text-sm text-muted-foreground">Teatro, piscina, festivales y patrimonio en el corazón de la villa.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {categorias.map((c) => (
