@@ -53,12 +53,15 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Cuenta creada. Ya puedes acceder.");
-        // Auto sign-in (email confirm off by default)
         const { error: e2 } = await supabase.auth.signInWithPassword({ email, password });
-        if (!e2) navigate({ to: redirect ?? "/" });
+        if (!e2) {
+          persistRemember();
+          navigate({ to: redirect ?? "/" });
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        persistRemember();
         toast.success("Bienvenido");
         navigate({ to: redirect ?? "/" });
       }
@@ -67,6 +70,13 @@ function AuthPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function persistRemember() {
+    try {
+      if (remember) localStorage.setItem(REMEMBER_KEY, email);
+      else localStorage.removeItem(REMEMBER_KEY);
+    } catch {}
   }
 
   return (
