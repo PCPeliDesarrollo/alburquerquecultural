@@ -131,8 +131,8 @@ function SiteHeader() {
         <Link to="/" className="flex min-w-0 items-center gap-3">
           <img src={logo.url} alt="Escudo de Alburquerque" className="h-11 w-11 shrink-0 object-contain" />
           <div className="min-w-0 leading-tight">
-            <div className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Alburquerque</div>
-            <div className="truncate text-xs text-muted-foreground">Ayuntamiento · Cultura y Eventos</div>
+            <div className="font-display text-sm font-semibold uppercase tracking-widest text-primary">Alburquerque Cultural</div>
+            <div className="truncate text-xs text-muted-foreground">Ayuntamiento · Entradas y actividades</div>
           </div>
         </Link>
         <nav className="ml-auto flex items-center gap-1 text-sm">
