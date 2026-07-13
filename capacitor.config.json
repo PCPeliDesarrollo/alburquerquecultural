@@ -1,0 +1,6 @@
+{
+  "appId": "com.alburquerquecultural.app",
+  "appName": "Cultural",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
